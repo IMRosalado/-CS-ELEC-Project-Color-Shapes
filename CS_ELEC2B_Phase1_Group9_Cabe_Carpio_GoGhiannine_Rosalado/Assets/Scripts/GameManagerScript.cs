@@ -7,9 +7,11 @@ using System.Collections;
 
 public class GameManagerScript : MonoBehaviour {
 
+	public static GameManagerScript Instance;
 	public int gridSize=9;
 	public GameObject chip;
 	public GameObject[] chips;
+	[HideInInspector] public bool isPaused = false;
 
 
 	private bool isPlayerOne = true;
@@ -17,12 +19,14 @@ public class GameManagerScript : MonoBehaviour {
 
 	void Start () {
 		grid = new int[gridSize, gridSize];
+		if (Instance == null)
+			Instance = this;
 	}
 
 	void Update () {
 
 		//checks on mouse click
-		if (Input.GetMouseButtonDown (0)) {
+		if (Input.GetMouseButtonDown (0) && !isPaused) {
 			Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
 			RaycastHit2D rayHit = Physics2D.Raycast(ray.origin,ray.direction,Mathf.Infinity);
 			GameObject clicked;
@@ -45,8 +49,10 @@ public class GameManagerScript : MonoBehaviour {
 
 			if (isPlayerOne) {
 				clicked.GetComponent<ChipScript> ().ShowChip("red");
+				UIManagerScript.Instance.playerTurn = 2;
 			} else {
 				clicked.GetComponent<ChipScript> ().ShowChip("blue");
+				UIManagerScript.Instance.playerTurn = 1;
 			}
 
 			isPlayerOne = !isPlayerOne; 
